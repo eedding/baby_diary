@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Diary - Multiple Children</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 50%, #fd79a8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #a8e6cf, #dcedc8);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '👶';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            color: #2d3436;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: #636e72;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .child-management {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .child-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .child-tab {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .child-tab.active {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            border-color: #fd79a8;
+        }
+
+        .child-tab:hover:not(.active) {
+            border-color: #fd79a8;
+            transform: translateY(-2px);
+        }
+
+        .add-child-btn {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .add-child-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+        }
+
+        .child-form {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .child-form.show {
+            display: block;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .entry-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px dashed #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .entry-form:hover {
+            border-color: #fd79a8;
+            box-shadow: 0 5px 15px rgba(253, 121, 168, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        input[type="text"], input[type="date"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #fd79a8;
+            box-shadow: 0 0 10px rgba(253, 121, 168, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .age-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover .file-upload-label {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(116, 185, 255, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(253, 121, 168, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 20px rgba(116, 185, 255, 0.3);
+        }
+
+        .entries {
+            margin-top: 40px;
+        }
+
+        .current-child-info {
+            background: linear-gradient(135deg, #a8e6cf, #dcedc8);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .current-child-info h2 {
+            color: #2d3436;
+            margin-bottom: 5px;
+        }
+
+        .current-child-info p {
+            color: #636e72;
+            font-style: italic;
+        }
+
+        .entry {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .entry:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .entry::before {
+            content: '💕';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            opacity: 0.3;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .entry-title-section {
+            flex: 1;
+        }
+
+        .entry-title {
+            font-size: 1.3rem;
+            color: #2d3436;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .entry-age {
+            color: #fd79a8;
+            font-weight: bold;
+            font-size: 0.9rem;
+            background: #fff5f8;
+            padding: 4px 10px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .entry-date {
+            color: #636e72;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .entry-content {
+            line-height: 1.6;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .entry-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .entry-photo {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .entry-photo:hover {
+            transform: scale(1.05);
+        }
+
+        .entry-photo img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .delete-btn {
+            background: #e17055;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #d63031;
+            transform: translateY(-1px);
+        }
+
+        .no-entries {
+            text-align: center;
+            color: #636e72;
+            font-style: italic;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .no-child {
+            text-align: center;
+            color: #636e72;
+            font-style: italic;
+            padding: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content, .child-management {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .age-input-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .entry-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .child-tabs {
+                justify-content: center;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .child-management, .entry-form {
+                display: none;
+            }
+            
+            .delete-btn, .add-child-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Family Diary</h1>
+            <p>Capturing precious moments for each little one</p>
+        </div>
+        
+        <div class="child-management">
+            <div class="child-tabs" id="childTabs">
+                <!-- Child tabs will be populated here -->
+            </div>
+            
+            <button class="add-child-btn" onclick="toggleChildForm()">+ Add New Child</button>
+            
+            <div class="child-form" id="childForm">
+                <h3 style="margin-bottom: 15px; color: #2d3436;">Add New Child</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="childName">Child's Name:</label>
+                        <input type="text" id="childName" placeholder="Enter child's name">
+                    </div>
+                    <div class="form-group">
+                        <label for="childBirthdate">Birth Date:</label>
+                        <input type="date" id="childBirthdate">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="addChild()">Add Child</button>
+                <button class="btn" onclick="toggleChildForm()" style="margin-left: 10px;">Cancel</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div id="noChildMessage" class="no-child">
+                <h3>Welcome to Your Family Diary! 👶</h3>
+                <p>Start by adding your first child above, then you can begin capturing those precious memories!</p>
+            </div>
+            
+            <div id="diaryContent" style="display: none;">
+                <div class="current-child-info" id="currentChildInfo">
+                    <!-- Current child info will be displayed here -->
+                </div>
+                
+                <div class="entry-form">
+                    <h2 style="color: #2d3436; margin-bottom: 20px; text-align: center;">✨ Add New Memory ✨</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="entryTitle">Memory Title:</label>
+                            <input type="text" id="entryTitle" placeholder="e.g., First Smile, Tummy Time, First Steps...">
+                        </div>
+                        <div class="form-group">
+                            <label for="entryDate">Date:</label>
+                            <input type="date" id="entryDate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group form-group-full">
+                            <label>Age at time of memory:</label>
+                            <div class="age-input-group">
+                                <div>
+                                    <input type="number" id="ageYears" placeholder="Years (e.g., 0, 1, 2...)" min="0" max="50" value="0">
+                                </div>
+                                <div>
+                                    <input type="number" id="ageMonths" placeholder="Months (e.g., 3, 6, 11...)" min="0" max="11" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="entryContent">Share this beautiful moment:</label>
+                        <textarea id="entryContent" placeholder="Today was such a special day... Tell the story of this precious moment!"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Add Photos:</label>
+                        <div class="file-upload">
+                            <input type="file" id="entryPhotos" multiple accept="image/*">
+                            <div class="file-upload-label">
+                                📷 Choose Photos to Upload
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" onclick="addEntry()">Save This Memory</button>
+                </div>
+                
+                <div class="entries" id="entriesContainer">
+                    <!-- Entries will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let children = [];
+        let currentChildId = null;
+        let entries = {};
+        
+        // Set today's date as default
+        document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+        
+        function toggleChildForm() {
+            const form = document.getElementById('childForm');
+            form.classList.toggle('show');
+            if (!form.classList.contains('show')) {
+                clearChildForm();
+            }
+        }
+        
+        function clearChildForm() {
+            document.getElementById('childName').value = '';
+            document.getElementById('childBirthdate').value = '';
+        }
+        
+        function addChild() {
+            const name = document.getElementById('childName').value.trim();
+            const birthdate = document.getElementById('childBirthdate').value;
+            
+            if (!name || !birthdate) {
+                alert('Please enter both name and birth date! 👶');
+                return;
+            }
+            
+            const child = {
+                id: Date.now(),
+                name: name,
+                birthdate: birthdate
+            };
+            
+            children.push(child);
+            entries[child.id] = [];
+            
+            renderChildTabs();
+            selectChild(child.id);
+            toggleChildForm();
+            clearChildForm();
+        }
+        
+        function selectChild(childId) {
+            currentChildId = childId;
+            renderChildTabs();
+            updateCurrentChildInfo();
+            renderEntries();
+            
+            // Show diary content, hide no child message
+            document.getElementById('noChildMessage').style.display = 'none';
+            document.getElementById('diaryContent').style.display = 'block';
+        }
+        
+        function renderChildTabs() {
+            const container = document.getElementById('childTabs');
+            
+            if (children.length === 0) {
+                container.innerHTML = '';
+                document.getElementById('noChildMessage').style.display = 'block';
+                document.getElementById('diaryContent').style.display = 'none';
+                return;
+            }
+            
+            container.innerHTML = children.map(child => `
+                <div class="child-tab ${child.id === currentChildId ? 'active' : ''}" onclick="selectChild(${child.id})">
+                    <span>👶</span>
+                    <span>${child.name}</span>
+                </div>
+            `).join('');
+        }
+        
+        function updateCurrentChildInfo() {
+            if (!currentChildId) return;
+            
+            const child = children.find(c => c.id === currentChildId);
+            if (!child) return;
+            
+            const age = calculateAge(child.birthdate);
+            const container = document.getElementById('currentChildInfo');
+            
+            container.innerHTML = `
+                <h2>${child.name}'s Diary 💕</h2>
+                <p>Born: ${formatDate(child.birthdate)} | Current Age: ${age}</p>
+            `;
+        }
+        
+        function calculateAge(birthdate) {
+            const birth = new Date(birthdate);
+            const today = new Date();
+            const years = today.getFullYear() - birth.getFullYear();
+            const months = today.getMonth() - birth.getMonth();
+            const days = today.getDate() - birth.getDate();
+            
+            let ageYears = years;
+            let ageMonths = months;
+            
+            if (days < 0) {
+                ageMonths--;
+            }
+            if (ageMonths < 0) {
+                ageYears--;
+                ageMonths += 12;
+            }
+            
+            if (ageYears > 0) {
+                return `${ageYears} year${ageYears !== 1 ? 's' : ''}, ${ageMonths} month${ageMonths !== 1 ? 's' : ''}`;
+            } else if (ageMonths > 0) {
+                return `${ageMonths} month${ageMonths !== 1 ? 's' : ''}`;
+            } else {
+                const daysDiff = Math.floor((today - birth) / (1000 * 60 * 60 * 24));
+                return `${daysDiff} day${daysDiff !== 1 ? 's' : ''}`;
+            }
+        }
+        
+        function addEntry() {
+            if (!currentChildId) {
+                alert('Please select a child first! 👶');
+                return;
+            }
+            
+            const title = document.getElementById('entryTitle').value.trim();
+            const date = document.getElementById('entryDate').value;
+            const content = document.getElementById('entryContent').value.trim();
+            const ageYears = parseInt(document.getElementById('ageYears').value) || 0;
+            const ageMonths = parseInt(document.getElementById('ageMonths').value) || 0;
+            const photosInput = document.getElementById('entryPhotos');
+            
+            if (!title || !date || !content) {
+                alert('Please fill in the title, date, and content to save this memory! 💝');
+                return;
+            }
+            
+            const entry = {
+                id: Date.now(),
+                childId: currentChildId,
+                title: title,
+                date: date,
+                content: content,
+                age: {
+                    years: ageYears,
+                    months: ageMonths
+                },
+                photos: []
+            };
+            
+            // Handle photo uploads
+            if (photosInput.files.length > 0) {
+                let photosProcessed = 0;
+                for (let i = 0; i < photosInput.files.length; i++) {
+                    const file = photosInput.files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        entry.photos.push({
+                            name: file.name,
+                            data: e.target.result
+                        });
+                        photosProcessed++;
+                        
+                        // If this is the last photo, add the entry
+                        if (photosProcessed === photosInput.files.length) {
+                            entries[currentChildId].unshift(entry);
+                            renderEntries();
+                            clearForm();
+                        }
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                entries[currentChildId].unshift(entry);
+                renderEntries();
+                clearForm();
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('entryTitle').value = '';
+            document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('entryContent').value = '';
+            document.getElementById('ageYears').value = '0';
+            document.getElementById('ageMonths').value = '0';
+            document.getElementById('entryPhotos').value = '';
+        }
+        
+        function deleteEntry(entryId) {
+            if (confirm('Are you sure you want to delete this precious memory? 🥺')) {
+                entries[currentChildId] = entries[currentChildId].filter(entry => entry.id !== entryId);
+                renderEntries();
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        function formatAge(age) {
+            const parts = [];
+            if (age.years > 0) parts.push(`${age.years} year${age.years !== 1 ? 's' : ''}`);
+            if (age.months > 0) parts.push(`${age.months} month${age.months !== 1 ? 's' : ''}`);
+            
+            if (parts.length === 0) return 'Newborn';
+            return parts.join(', ');
+        }
+        
+        function renderEntries() {
+            if (!currentChildId) return;
+            
+            const container = document.getElementById('entriesContainer');
+            const childEntries = entries[currentChildId] || [];
+            
+            if (childEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="no-entries">
+                        <h3>No memories yet for this little one...</h3>
+                        <p>Start capturing those precious moments above! 👆</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = childEntries.map(entry => `
+                <div class="entry">
+                    <div class="entry-header">
+                        <div class="entry-title-section">
+                            <div class="entry-title">${entry.title}</div>
+                            <div class="entry-age">${formatAge(entry.age)} old</div>
+                        </div>
+                        <div class="entry-date">${formatDate(entry.date)}</div>
+                    </div>
+                    <div class="entry-content">${entry.content.replace(/\n/g, '<br>')}</div>
+                    ${entry.photos.length > 0 ? `
+                        <div class="entry-photos">
+                            ${entry.photos.map(photo => `
+                                <div class="entry-photo">
+                                    <img src="${photo.data}" alt="${photo.name}">
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <button class="delete-btn" onclick="deleteEntry(${entry.id})">Delete Memory</button>
+                </div>
+            `).join('');
+        }
+        
+        // Handle Enter key in form
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                addEntry();
+            }
+        });
+        
+        // Initialize
+        renderChildTabs();
+    </script>
+</body>
+</html>
